@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <%= (locals.css_block) ? css_block : '' %>
+    <%= (locals.js_block_top) ? js_block_top : '' %>
+  </head>
+  <body class="<%= (locals.body_class) ? body_class : '' %>">
