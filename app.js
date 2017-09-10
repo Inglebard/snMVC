@@ -1,5 +1,6 @@
-var express = require('express');
 var	http = require('http');
+var	https = require('https');
+var express = require('express');
 var	config = require('./config/config.js')();
 var	app = express();
 
@@ -11,20 +12,8 @@ var	app = express();
 var data_app = {};
 
 data_app.root = __dirname;
-data_app.port = normalizePort(config.port || process.env.PORT || '3000');
 data_app.config = config;
 data_app.count = 0;
-
-function normalizePort(val) {
-  var port = parseInt(val, 10);
-  if (isNaN(port)) {
-    return val;
-  }
-  if (port >= 0) {
-    return port;
-  }
-  return false;
-}
 
 var execPreApp = function ()
 {
@@ -115,9 +104,6 @@ var execInAppPostRouting = function ()
 
 var execStartServer = function ()
 {
-  var server = http.createServer(app);
-
-
   /**
    * Event listener for HTTP server "error" event.
    */
@@ -125,10 +111,11 @@ var execStartServer = function ()
     if (error.syscall !== 'listen') {
       throw error;
     }
-
-    var bind = typeof port === 'string'
-      ? 'Pipe ' + port
-      : 'Port ' + port;
+    
+    var addr = this.address();
+    var bind = typeof addr === 'string'
+      ? 'Pipe ' + addr
+      : 'Port ' + addr.port;
 
     // handle specific listen errors with friendly messages
     switch (error.code) {
@@ -148,22 +135,37 @@ var execStartServer = function ()
    * Event listener for HTTP server "listening" event.
    */
   function onListening() {
-    var addr = server.address();
+    var addr = this.address();
     var bind = typeof addr === 'string'
       ? 'pipe ' + addr
       : 'port ' + addr.port;
     console.log('Listening on ' + bind);
   }
   
+  //seems to be called once
   function onClose() {
     data_app.count = 0;
     execPostApp();
   }
-
-  server.listen(data_app.port);
-  server.on('error', onError);
-  server.on('listening', onListening);
-  server.on('close', onClose);
+  
+  
+  if(data_app.config.http)
+  {
+  	var server = http.createServer(app);
+	server.listen(data_app.config.http.port);
+	server.on('error', onError);
+	server.on('listening', onListening);
+	server.on('close', onClose);
+  
+  }
+  if(data_app.config.https)
+  {
+	var server_ssl = https.createServer(data_app.config.https.options,app);
+	server_ssl.listen(data_app.config.https.port);
+	server_ssl.on('error', onError);
+	server_ssl.on('listening', onListening);
+	server_ssl.on('close', onClose);
+  }
 }
 
 

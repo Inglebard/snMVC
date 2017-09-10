@@ -1,6 +1,11 @@
+var	fs = require('fs');
+
 module.exports = {
 	mode: 'dev',
-	port: 3000,
+	http :
+	{		
+		port: 3000,
+	},
 	pre_app: [
 	],
 	databases : [
