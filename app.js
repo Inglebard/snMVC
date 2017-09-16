@@ -9,8 +9,13 @@ var	app = express();
  */
 
 
+var server;
+var server_ssl;
 var data_app = {};
 
+data_app.root = __dirname;
+data_app.server = server;
+data_app.server_ssl = server_ssl;
 data_app.root = __dirname;
 data_app.config = config;
 data_app.count = 0;
@@ -21,7 +26,7 @@ var execPreApp = function ()
   if (data_app.count >= data_app.config.pre_app.length)
   {
       data_app.count = 0;
-      execDatabases();
+      execStartServer();
   }
   else
   {
@@ -92,7 +97,6 @@ var execInAppPostRouting = function ()
     if (data_app.count >= data_app.config.in_app.post_routing.length)
     {
         data_app.count = 0;
-        execStartServer();
     }
     else
     {
@@ -111,7 +115,7 @@ var execStartServer = function ()
     if (error.syscall !== 'listen') {
       throw error;
     }
-    
+
     var addr = this.address();
     var bind = typeof addr === 'string'
       ? 'Pipe ' + addr
@@ -141,31 +145,32 @@ var execStartServer = function ()
       : 'port ' + addr.port;
     console.log('Listening on ' + bind);
   }
-  
+
   //seems to be called once
   function onClose() {
     data_app.count = 0;
     execPostApp();
   }
-  
-  
+
+
   if(data_app.config.http)
   {
-  	var server = http.createServer(app);
-	server.listen(data_app.config.http.port);
-	server.on('error', onError);
-	server.on('listening', onListening);
-	server.on('close', onClose);
-  
+  data_app.server = http.createServer(app);
+	data_app.server.listen(data_app.config.http.port);
+	data_app.server.on('error', onError);
+	data_app.server.on('listening', onListening);
+	data_app.server.on('close', onClose);
+
   }
   if(data_app.config.https)
   {
-	var server_ssl = https.createServer(data_app.config.https.options,app);
-	server_ssl.listen(data_app.config.https.port);
-	server_ssl.on('error', onError);
-	server_ssl.on('listening', onListening);
-	server_ssl.on('close', onClose);
+	data_app.server_ssl = https.createServer(data_app.config.https.options,app);
+	data_app.server_ssl.listen(data_app.config.https.port);
+	data_app.server_ssl.on('error', onError);
+	data_app.server_ssl.on('listening', onListening);
+	data_app.server_ssl.on('close', onClose);
   }
+  execDatabases();
 }
 
 
@@ -184,8 +189,4 @@ var execPostApp = function ()
     post_app.init(app,data_app,next);
   }
 }
-
-
 execPreApp();
-
-

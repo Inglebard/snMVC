@@ -1,9 +1,17 @@
 var config = {
-    dev: require('./config.dev.js') ,
-    prod: require('./config.prod.js')
-
+    dev: './config.dev.js' ,
+    prod: './config.prod.js'
 }
 
 module.exports = function(mode) {
-    return config[mode || process.argv[2] || 'dev'] || config.dev;
+	var config_mode = mode || process.argv[2] || 'dev'
+
+	if (config[config_mode])
+	{
+		return require(config[config_mode]);
+	}
+	else
+	{
+		return require(config['dev']);
+	}
 }
