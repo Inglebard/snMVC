@@ -1,3 +1,4 @@
+var	fs = require('fs');
 var	http = require('http');
 var	https = require('https');
 var express = require('express');
@@ -155,20 +156,28 @@ var execStartServer = function ()
 
   if(data_app.config.http)
   {
-  data_app.server = http.createServer(app);
-	data_app.server.listen(data_app.config.http.port);
-	data_app.server.on('error', onError);
-	data_app.server.on('listening', onListening);
-	data_app.server.on('close', onClose);
+    data_app.server = http.createServer(app);
+  	data_app.server.listen(data_app.config.http.port);
+  	data_app.server.on('error', onError);
+  	data_app.server.on('listening', onListening);
+  	data_app.server.on('close', onClose);
 
   }
   if(data_app.config.https)
   {
-	data_app.server_ssl = https.createServer(data_app.config.https.options,app);
-	data_app.server_ssl.listen(data_app.config.https.port);
-	data_app.server_ssl.on('error', onError);
-	data_app.server_ssl.on('listening', onListening);
-	data_app.server_ssl.on('close', onClose);
+
+    let options={};
+    for(let key in data_app.config.https.options) {
+        if(key == 'key' || key == 'cert') {
+            options[key] = fs.readFileSync(data_app.config.https.options[key]);
+        }
+    }
+
+  	data_app.server_ssl = https.createServer(options,app);
+  	data_app.server_ssl.listen(data_app.config.https.port);
+  	data_app.server_ssl.on('error', onError);
+  	data_app.server_ssl.on('listening', onListening);
+  	data_app.server_ssl.on('close', onClose);
   }
   execDatabases();
 }
