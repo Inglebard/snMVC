@@ -29,7 +29,7 @@ Just launch
 
 ```
 npm install
-node app.js
+npm start
 ```
 
 Just check [this example](https://github.com/Inglebard/snMVC-example) to understand how it works.
