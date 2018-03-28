@@ -88,8 +88,9 @@ var execInAppPreRouting = function ()
 
 var execRouting = function ()
 {
-  app.use('/', require('./config/router.js'));
-  execInAppPostRouting();
+  let next = execInAppPostRouting;
+  let router = require('./config/router.js');
+  router.init(app,data_app,next);
 }
 
 var execInAppPostRouting = function ()

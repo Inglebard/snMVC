@@ -2,6 +2,9 @@ var router = require('express').Router();
 
 var IndexController = require("../controllers/IndexController.js");
 
-router.get('/', IndexController.index);
-
-module.exports = router;
+module.exports.init = function(app,data_app,next)
+{
+	router.get('/', IndexController.index);
+  app.use('/', router);
+	next();
+}

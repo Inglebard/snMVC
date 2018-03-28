@@ -1,6 +1,6 @@
 {
   "name": "snMVC",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "app.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "Inglebard",
   "license": "MIT",
   "dependencies": {
-    "ejs": "^2.5.7",
-    "express": "^4.15.4"
+    "ejs": "^2.5.8",
+    "express": "^4.16.3"
   }
 }
